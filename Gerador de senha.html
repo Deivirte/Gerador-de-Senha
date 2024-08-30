@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Senha 🔒</title>
+    <link rel="icon" href="https://example.com/icon.ico" type="image/x-icon"> <!-- Atualize o link do favicon -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #EB7000; /* Cor de fundo */
+            color: #eb7200e0; /* Cor do texto para contraste */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Altura total da viewport */
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            color: #eb7200e0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 100%;
+            max-width: 400px; /* Largura máxima */
+        }
+        img {
+            width: 200px; /* Largura da imagem */
+            height: auto; /* Mantém a proporção da imagem */
+            margin-bottom: 20px; /* Espaçamento abaixo da imagem */
+        }
+        input[type="text"] {
+            width: calc(100% - 22px); /* Ajusta para o padding e a borda */
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #EB7000;
+            border-radius: 5px;
+            box-sizing: border-box; /* Inclui padding e borda na largura total */
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #EB7000;
+            border-radius: 5px;
+            margin: 5px;
+            background-color: #EB7000;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        button:hover {
+            background-color: #e35d10;
+            color: #fff;
+        }
+        button:active {
+            background-color: #ff6f00;
+        }
+        .password-strength {
+            margin-top: 10px;
+            height: 10px;
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .strength-bar {
+            height: 100%;
+            width: 0;
+            background-color: #4CAF50;
+            transition: width 0.3s;
+        }
+        .strength-text {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://interpag.co/wp-content/uploads/2024/07/logo-interpag-2.png.webp" alt="Ícone de Senha" class="icon">
+        <h1>Gerador de Senha</h1>
+        <input type="text" id="senha" readonly placeholder="Copiar senha">
+        <br>
+        <button onclick="gerarSenha(8)">↻ Gerar Senha com 8 caracteres</button>
+        <button onclick="gerarSenha(12)">↻ Gerar Senha com 12 caracteres</button>
+        <div class="password-strength">
+            <div id="strength-bar" class="strength-bar"></div>
+        </div>
+        <div id="strength-text" class="strength-text">Força da Senha:</div>
+    </div>
+
+    <script>
+        function gerarSenha(comprimento) {
+            const letrasMaiusculas = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const letrasMinusculas = 'abcdefghijklmnopqrstuvwxyz';
+            const digitos = '0123456789';
+            const caracteresEspeciais = '!@#$%^&*()_+[]{}|;:,.<>?';
+            const todosOsCaracteres = letrasMaiusculas + letrasMinusculas + digitos + caracteresEspeciais;
+
+            let senha = '';
+            for (let i = 0; i < comprimento; i++) {
+                const caractereAleatorio = todosOsCaracteres.charAt(Math.floor(Math.random() * todosOsCaracteres.length));
+                senha += caractereAleatorio;
+            }
+
+            document.getElementById('senha').value = senha;
+            avaliarForcaSenha(senha);
+        }
+
+        function copiarSenha() {
+            const campoSenha = document.getElementById('senha');
+            campoSenha.select();
+            campoSenha.setSelectionRange(0, 99999); // Para dispositivos móveis
+            
+            try {
+                document.execCommand('copy');
+                alert('Senha copiada para a área de transferência!');
+            } catch (err) {
+                alert('Falha ao copiar a senha.');
+            }
+        }
+
+        function avaliarForcaSenha(senha) {
+            let forca = 0;
+
+            if (senha.length >= 8) forca += 1;
+            if (senha.length >= 12) forca += 1;
+            if (/[a-z]/.test(senha)) forca += 1;
+            if (/[A-Z]/.test(senha)) forca += 1;
+            if (/\d/.test(senha)) forca += 1;
+            if (/[\W_]/.test(senha)) forca += 1;
+
+            const bar = document.getElementById('strength-bar');
+            const text = document.getElementById('strength-text');
+
+            switch (forca) {
+                case 0:
+                case 1:
+                    bar.style.width = '20%';
+                    bar.style.backgroundColor = '#ff4d4d';
+                    text.textContent = 'Força da Senha: 👎 Muito Fraca';
+                    break;
+                case 2:
+                    bar.style.width = '40%';
+                    bar.style.backgroundColor = '#ffb84d';
+                    text.textContent = 'Força da Senha: 👎 Fraca';
+                    break;
+                case 3:
+                    bar.style.width = '60%';
+                    bar.style.backgroundColor = '#ffff66';
+                    text.textContent = 'Força da Senha: Média';
+                    break;
+                case 4:
+                    bar.style.width = '80%';
+                    bar.style.backgroundColor = '#99ff99';
+                    text.textContent = 'Força da Senha: Boa';
+                    break;
+                case 5:
+                case 6:
+                    bar.style.width = '100%';
+                    bar.style.backgroundColor = '#4CAF50';
+                    text.textContent = 'Força da Senha: 💪 Forte';
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>
